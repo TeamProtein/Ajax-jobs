@@ -81,7 +81,19 @@ return strings.sort(function (a, b) { return b.length - a.length; })[0].length;
 // Write a function sizeColumns(rowNames, colNames) which returns an array of widths, one per column. The width of the first column should depend on the longest string in rowNames; the width of all other columns depends on the longest string in colNames. There should be one leading column (for all rowNames) plus one column for each of colNames.
 // For example: var cols = sizeColumns(['wash','dry','cook','mop'],['mom','dad','sally','billy']) should return [4,5,5,5,5].
 
-
+function sizeColumns(rowNames, colNames) {
+   var arr = [];
+   var colMax = maxLength(colNames).length; //Get Longest Col String
+   for (var i = 0; i <= colNames.length; i++) {
+     if (i === 0) { //Push longest row length first to array
+       arr.push(maxLength(rowNames).length);
+     }
+     else { //Remaining items will be longest Col length
+       arr.push(colMax);
+     }
+   }
+   return arr;
+}
 
 
 // writeRow(colSizes, strings)
