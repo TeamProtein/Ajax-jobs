@@ -73,7 +73,7 @@ function jobsDoneBy(person) {
 // maxLength(strings) --> number
 // Write a function maxLength(strings) which returns the length of the longest string in the array strings
 function maxLength(strings){
-return strings.sort(function (a, b) { return b.length - a.length; })[0];
+return strings.sort(function (a, b) { return b.length - a.length; })[0].length;
 }
 
 
@@ -96,6 +96,17 @@ return strings.sort(function (a, b) { return b.length - a.length; })[0];
 //     return (str+padding).slice(len);
 // }
 
+function writeRow(colSizes,strings){
+  var straw = "";
+  function rightPad(str,len){
+    var padding = Array(len-str.length +1).join(' ');
+    return (str+padding);
+  }
+  for(var i=0;i<colSizes.length;i++){
+    straw += rightPad(strings[i],colSizes[i]);
+  }
+  return straw;
+}
 
 
 
