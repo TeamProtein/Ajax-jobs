@@ -63,7 +63,6 @@ function peopleDoing(job) {
 
 function jobsDoneBy(person) {
   var jobsArr = [];
-  // console.log(person.jobs);
   for (var doneJobs in person.jobs) {
     jobsArr.push(jobs[doneJobs]);
   }
@@ -141,6 +140,7 @@ Data processing ====================
 // score(mop,sally) //--> (0 for mom + .67 for dad)  === .67
 // But mom is super-compatible with drying, because everyone else does it already!
 // score(dry,mom) //--> (.33 for dad + 0 for Sally + .50 for Billy) === .83
+
 
 
 
