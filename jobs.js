@@ -72,8 +72,9 @@ function jobsDoneBy(person) {
 
 // maxLength(strings) --> number
 // Write a function maxLength(strings) which returns the length of the longest string in the array strings
-
-
+function maxLength(strings){
+return strings.sort(function (a, b) { return b.length - a.length; })[0];
+}
 
 
 // sizeColumns(rowNames, colNames) --> array of ints
