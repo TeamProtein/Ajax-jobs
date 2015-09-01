@@ -65,13 +65,12 @@ function peopleDoing(job) {
 
 function jobsDoneBy(person) {
   var jobsArr = [];
-  // console.log(person.jobs);
   for (var doneJobs in person.jobs) {
     jobsArr.push(jobs[doneJobs]);
   }
   return jobsArr;
-} //--> Array of objects
-console.log(jobsDoneBy('billy'));
+}
+console.log(jobsDoneBy(billy));
 
 
 // Write a function jobsDoneBy(person) which returns an array of job-objects
