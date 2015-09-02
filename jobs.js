@@ -1,3 +1,5 @@
+var lodash = require('lodash');
+
 // people
 var mom  = {name:'mom',  jobs:{}},
     dad  = {name:'dad',  jobs:{}},
@@ -83,10 +85,10 @@ return strings.sort(function (a, b) { return b.length - a.length; })[0].length;
 
 function sizeColumns(rowNames, colNames) {
    var arr = [];
-   var colMax = maxLength(colNames).length; //Get Longest Col String
+   var colMax = maxLength(colNames); //Get Longest Col String
    for (var i = 0; i <= colNames.length; i++) {
      if (i === 0) { //Push longest row length first to array
-       arr.push(maxLength(rowNames).length);
+       arr.push(maxLength(rowNames));
      }
      else { //Remaining items will be longest Col length
        arr.push(colMax);
@@ -132,6 +134,30 @@ function writeRow(colSizes,strings){
 // mop  | X     X
 // The functions sizeColumns and writeRow will help you format the table.
 
+function writeJobsTable(people, jobs) {
+  var peopleArr = Object.keys(people);
+  peopleArr.unshift(" ");
+  var jobsArr = Object.keys(jobs);
+  jobsArr.unshift(" ");
+  var colsizes = sizeColumns(jobsArr, peopleArr);
+  console.log(peopleArr);
+
+  // var table = writeRow(colsizes, peopleArr);
+  // console.log(table);
+  // var data = [];
+  // for (var i in people) {
+  //   for (var j in jobs) {
+  //     if (hasJob(somebody, somejob)) {
+  //       data.push("X");
+  //     } else {
+  //       data.push(" ");
+  //     }
+  //
+  //   }
+  // }
+}
+
+// writeJobsTable(people, jobs);
 
 /*----------------------------------
 Data processing ====================
@@ -142,6 +168,11 @@ Data processing ====================
 // Write a function intersectJobs(nameA,nameB) to return an array of names of the jobs shared by the people named nameA and nameB. For example:
 // intersectJobs('dad','sally') // should return either ['cook','dry'] or ['dry','cook']
 // intersectJobs('mom','sally') // should return []
+function intersectJobs(nameA, nameB) {
+  return (lodash.intersection(lodash.keys(nameA.jobs), lodash.keys(nameB.jobs)));
+}
+
+// console.log(intersectJobs(mom,dad));
 
 
 
@@ -154,8 +185,16 @@ Data processing ====================
 // dad     1   .67 .33
 // sal         1   .50
 // bil             1
+function similarity(personA, personB) {
+  var intersect = lodash.intersection(lodash.keys(personA.jobs), lodash.keys(personB.jobs));
+  if (jobsDoneBy(personA).length > jobsDoneBy(personB).length) {
+    return intersect.length/jobsDoneBy(personA).length;
+  } else {
+    return intersect.length/jobsDoneBy(personB).length;
+  }
+}
 
-
+// console.log(similarity(billy,sally));
 
 
 // score(job,person) --> number
@@ -173,3 +212,11 @@ Data processing ====================
 // Write a function recommendJobsFor(person) which returns an array of objects containing possible new jobs for person with compatibility scores for each. The objects in the array should be sorted in descending order of scores, so that the strongest recommendation is first. Omit any jobs which person is already doing or for which they have zero compatibility.
 // For example, mom could do either of two new jobs, drying or cooking. Recommendations for her would be:
 // recommendJobsFor(mom) //--> [{job:dry, score:.83},{job:cook, score:.33}]
+
+
+module.exports = {
+    maxLength:maxLength,
+    sizeColumns:sizeColumns,
+    writeRow:writeRow,
+    writeJobsTable:writeJobsTable
+  };
