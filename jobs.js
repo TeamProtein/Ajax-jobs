@@ -57,7 +57,7 @@ function hasJob(person,job) {
 function peopleDoing(job) {
   var peopleArr = [];
   for (var names in job.who) {
-    peopleArr.push(people[names]);
+    peopleArr.push(names);
   }
   return peopleArr;
 } //--> Array of people-objects
@@ -169,7 +169,21 @@ Data processing ====================
 // intersectJobs('dad','sally') // should return either ['cook','dry'] or ['dry','cook']
 // intersectJobs('mom','sally') // should return []
 function intersectJobs(nameA, nameB) {
-  return (lodash.intersection(lodash.keys(nameA.jobs), lodash.keys(nameB.jobs)));
+  // overload for both strings and objects
+  var nA,
+      nB;
+  if (typeof nameA === "string") {
+    nA = people[nameA];
+  } else {
+    nA = nameA;
+  }
+  if (typeof nameB === "string") {
+    nB = people[nameB];
+  } else {
+    nB = nameB;
+  }
+  // actual intersection
+  return (lodash.intersection(lodash.keys(nA.jobs), lodash.keys(nB.jobs)));
 }
 
 // console.log(intersectJobs(mom,dad));
@@ -186,15 +200,30 @@ function intersectJobs(nameA, nameB) {
 // sal         1   .50
 // bil             1
 function similarity(personA, personB) {
-  var intersect = lodash.intersection(lodash.keys(personA.jobs), lodash.keys(personB.jobs));
-  if (jobsDoneBy(personA).length > jobsDoneBy(personB).length) {
-    return intersect.length/jobsDoneBy(personA).length;
+  // overload for both strings and objects
+  var pA,
+      pB;
+  if (typeof personA === "string") {
+    pA = people[personA];
   } else {
-    return intersect.length/jobsDoneBy(personB).length;
+    pA = personA;
+  }
+  if (typeof personB === "string") {
+    pB = people[personB];
+  } else {
+    pB = personB;
+  }
+  // get intersected jobs
+  var intersect = intersectJobs(pA, pB);
+  //see whih person has more jobs and divide number of intersected jobs by that amount
+  if (jobsDoneBy(pA).length > jobsDoneBy(pB).length) {
+    return intersect.length/jobsDoneBy(pA).length;
+  } else {
+    return intersect.length/jobsDoneBy(pB).length;
   }
 }
 
-// console.log(similarity(billy,sally));
+// console.log(similarity(dad,mom));
 
 
 // score(job,person) --> number
@@ -204,8 +233,32 @@ function similarity(personA, personB) {
 // But mom is super-compatible with drying, because everyone else does it already!
 // score(dry,mom) //--> (.33 for dad + 0 for Sally + .50 for Billy) === .83
 
+function score(job, person) {
+  var j,
+      p;
+  if (typeof job === "string") {
+    j = jobs[job];
+  } else {
+    j = job;
+  }
+  if (typeof person === "string") {
+    p = people[person];
+  } else {
+    p = person;
+  }
+  var retScore = 0;
+  var jobsDoing = peopleDoing(j);
+  for (var name in jobsDoing) {
+    if (jobsDoing[name] == p) {}
+    else {
+      retScore += similarity(p, people[jobsDoing[name]]);
+    }
+  }
+  return retScore;
+}
 
 
+console.log(score(dry, mom));
 
 
 // recommendJobsFor(person) --> array of objects
