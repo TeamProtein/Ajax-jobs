@@ -1,6 +1,6 @@
 var lodash = require('lodash');
 
-// people
+// people(group)
 var mom  = {name:'mom',  jobs:{}},
     dad  = {name:'dad',  jobs:{}},
     billy= {name:'billy',jobs:{}},
@@ -12,14 +12,14 @@ var wash=   {job:'wash',who:{}},
     mop =   {job:'mop', who:{}},
     cook=   {job:'cook',who:{}};
 
-var people = {
+var group = {
     mom:mom,
     dad:dad,
     billy:billy,
     sally:sally
 };
 
-var jobs = {
+var badges = {
     mop:mop,
     cook:cook,
     wash:wash,
@@ -31,44 +31,50 @@ dry.who  = {dad:dad,billy:billy,sally:sally};
 cook.who = {dad:dad,sally:sally};
 mop.who  = {dad:dad,mom:mom};
 
-mom.jobs  = {wash:wash,mop:mop};
-dad.jobs  = {dry:dry,cook:cook,mop:mop};
-sally.jobs= {dry:dry,cook:cook};
-billy.jobs= {wash:wash,dry:dry};
+mom.badges  = {wash:wash,mop:mop};
+dad.badges  = {dry:dry,cook:cook,mop:mop};
+sally.badges= {dry:dry,cook:cook};
+billy.badges= {wash:wash,dry:dry};
 
-function hasJob(person,job) {
-  var testJob;
-  var testPerson;
-  if (typeof person === "string" && typeof job === "string") {
+
+//person->uname
+//job->bID
+//testJob->testBadge
+//testPerson->testUser
+//people->group
+//jobs->badges
+
+function hasBadge(uname,bID) {
+  var testBadge;
+  var testUser;
+  if (typeof uname === "string" && typeof bID === "string") {
     // if string parameters, use var job as is but convert person to property name and then look in that jobs property
-    testJob = job;
-    testPerson = people[person].jobs;
+    testBadge = bID;
+    testBadge = group[uname].badges;
 } else {
     // if object parameters, get the key of the job (provides a string) and look in the person object for the job parameter
-    testJob = job.job;
-    testPerson = person.jobs;
+    testBadge = bID.bID;
+    testUser = uname.badges;
   }
-  return (testJob in testPerson);
+  return (testBadge in testUser);
 }
 
 
-// console.log(hasJob(mom, mop));
-
-function peopleDoing(job) {
+function peopleDoing(bID) {
   var peopleArr = [];
-  for (var names in job.who) {
+  for (var names in bID.who) {
     peopleArr.push(names);
   }
   return peopleArr;
 } //--> Array of people-objects
 
 
-function jobsDoneBy(person) {
-  var jobsArr = [];
-  for (var doneJobs in person.jobs) {
-    jobsArr.push(jobs[doneJobs]);
+function badgesDoneBy(uname) {
+  var badgeArr = [];
+  for (var doneB in uname.badges) {
+    jobsArr.push(badges[doneB]);
   }
-  return jobsArr;
+  return badgeArr;
 } //--> Array of objects
 // console.log(jobsDoneBy('billy'));
 
@@ -134,12 +140,12 @@ function writeRow(colSizes,strings){
 // mop  | X     X
 // The functions sizeColumns and writeRow will help you format the table.
 
-function writeJobsTable(people, jobs) {
-  var peopleArr = Object.keys(people);
+function writeBadgeTable(group, badges) {
+  var peopleArr = Object.keys(group);
   peopleArr.unshift(" ");
-  var jobsArr = Object.keys(jobs);
-  jobsArr.unshift(" ");
-  var colsizes = sizeColumns(jobsArr, peopleArr);
+  var badgeArr = Object.keys(badges);
+  badgeArr.unshift(" ");
+  var colsizes = sizeColumns(badgeArr, peopleArr);
   console.log(peopleArr);
 
   // var table = writeRow(colsizes, peopleArr);
@@ -168,25 +174,24 @@ Data processing ====================
 // Write a function intersectJobs(nameA,nameB) to return an array of names of the jobs shared by the people named nameA and nameB. For example:
 // intersectJobs('dad','sally') // should return either ['cook','dry'] or ['dry','cook']
 // intersectJobs('mom','sally') // should return []
-function intersectJobs(nameA, nameB) {
+function intersectBadges(nameA, nameB) {
   // overload for both strings and objects
   var nA,
       nB;
   if (typeof nameA === "string") {
-    nA = people[nameA];
+    nA = group[nameA];
   } else {
     nA = nameA;
   }
   if (typeof nameB === "string") {
-    nB = people[nameB];
+    nB = group[nameB];
   } else {
     nB = nameB;
   }
   // actual intersection
-  return (lodash.intersection(lodash.keys(nA.jobs), lodash.keys(nB.jobs)));
+  return (lodash.intersection(lodash.keys(nA.badges), lodash.keys(nB.badges)));
 }
 
-// console.log(intersectJobs(mom,dad));
 
 
 
@@ -204,22 +209,22 @@ function similarity(personA, personB) {
   var pA,
       pB;
   if (typeof personA === "string") {
-    pA = people[personA];
+    pA = group[personA];
   } else {
     pA = personA;
   }
   if (typeof personB === "string") {
-    pB = people[personB];
+    pB = group[personB];
   } else {
     pB = personB;
   }
   // get intersected jobs
-  var intersect = intersectJobs(pA, pB);
+  var intersect = intersectBadges(pA, pB);
   //see whih person has more jobs and divide number of intersected jobs by that amount
-  if (jobsDoneBy(pA).length > jobsDoneBy(pB).length) {
-    return intersect.length/jobsDoneBy(pA).length;
+  if (badgesDoneBy(pA).length > badgesDoneBy(pB).length) {
+    return intersect.length/badgesDoneBy(pA).length;
   } else {
-    return intersect.length/jobsDoneBy(pB).length;
+    return intersect.length/badgesDoneBy(pB).length;
   }
 }
 
@@ -233,25 +238,25 @@ function similarity(personA, personB) {
 // But mom is super-compatible with drying, because everyone else does it already!
 // score(dry,mom) //--> (.33 for dad + 0 for Sally + .50 for Billy) === .83
 
-function score(job, person) {
+function score(bID, uname) {
   var j,
       p;
   if (typeof job === "string") {
-    j = jobs[job];
+    j = badges[bID];
   } else {
-    j = job;
+    j = bID;
   }
-  if (typeof person === "string") {
-    p = people[person];
+  if (typeof uname === "string") {
+    p = group[uname];
   } else {
-    p = person;
+    p = uname;
   }
   var retScore = 0;
-  var jobsDoing = peopleDoing(j);
-  for (var name in jobsDoing) {
-    if (jobsDoing[name] == p) {}
+  var badgesDoing = peopleDoing(j);
+  for (var name in badgesDoing) {
+    if (badgesDoing[name] == p) {}
     else {
-      retScore += similarity(p, people[jobsDoing[name]]);
+      retScore += similarity(p, people[badgesDoing[name]]);
     }
   }
   return retScore;
@@ -271,5 +276,5 @@ module.exports = {
     maxLength:maxLength,
     sizeColumns:sizeColumns,
     writeRow:writeRow,
-    writeJobsTable:writeJobsTable
+    writeBadgesTable:writeBadgesTable
   };
